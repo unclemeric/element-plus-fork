@@ -159,10 +159,8 @@
         </div>
       </div>
     </div>
-    <div
-      v-show="footerVisible && currentView === 'date'"
-      :class="ppNs.e('footer')"
-    >
+    <!-- 这是下面一行代码的判断 v-show="footerVisible && currentView === 'date'" -->
+    <div :class="ppNs.e('footer')">
       <el-button
         v-show="selectionMode !== 'dates'"
         text
@@ -314,9 +312,12 @@ const handleDatePick = (value: DateTableEmits, keepOpen?: boolean) => {
         .date(value.date())
     }
     innerDate.value = newDate
-    emit(newDate, showTime.value || keepOpen)
+    // 注释下面一段代码阻止点击日期后日期表格马上消失操作
+    // emit(newDate, showTime.value || keepOpen)
+    emit(newDate, keepOpen || true)
   } else if (selectionMode.value === 'week') {
-    emit((value as WeekPickerEmits).date)
+    // emit((value as WeekPickerEmits).date)
+    emit((value as WeekPickerEmits).date, true)
   } else if (selectionMode.value === 'dates') {
     emit(value as DatesPickerEmits, true) // set true to keep panel open
   }
@@ -395,7 +396,8 @@ const hasShortcuts = computed(() => !!shortcuts.length)
 const handleMonthPick = async (month: number) => {
   innerDate.value = innerDate.value.startOf('month').month(month)
   if (selectionMode.value === 'month') {
-    emit(innerDate.value, false)
+    // emit(innerDate.value, false)
+    emit(innerDate.value, true)
   } else {
     currentView.value = 'date'
     if (['month', 'year', 'date', 'week'].includes(selectionMode.value)) {
@@ -410,7 +412,8 @@ const handleMonthPick = async (month: number) => {
 const handleYearPick = async (year: number) => {
   if (selectionMode.value === 'year') {
     innerDate.value = innerDate.value.startOf('year').year(year)
-    emit(innerDate.value, false)
+    // emit(innerDate.value, false)
+    emit(innerDate.value, true)
   } else {
     innerDate.value = innerDate.value.year(year)
     currentView.value = 'month'

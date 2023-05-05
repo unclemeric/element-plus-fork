@@ -220,7 +220,8 @@
         </div>
       </div>
     </div>
-    <div v-if="showTime" :class="ppNs.e('footer')">
+    <!-- v-if="showTime" -->
+    <div :class="ppNs.e('footer')">
       <el-button
         v-if="clearable"
         text
@@ -526,7 +527,7 @@ const handleRangePick = (
   minDate.value = minDate_
 
   if (!close || showTime.value) return
-  handleRangeConfirm()
+  // handleRangeConfirm()
 }
 
 const minTimePickerVisible = ref(false)

@@ -95,6 +95,25 @@
         </div>
       </div>
     </div>
+    <div :class="ppNs.e('footer')">
+      <el-button
+        text
+        size="small"
+        :class="ppNs.e('link-btn')"
+        @click="handleClear"
+      >
+        {{ t('el.datepicker.clear') }}
+      </el-button>
+      <el-button
+        plain
+        size="small"
+        :class="ppNs.e('link-btn')"
+        :disabled="btnDisabled"
+        @click="handleRangeConfirm(false)"
+      >
+        {{ t('el.datepicker.confirm') }}
+      </el-button>
+    </div>
   </div>
 </template>
 
@@ -102,6 +121,7 @@
 import { computed, inject, ref, toRef } from 'vue'
 import dayjs from 'dayjs'
 import ElIcon from '@element-plus/components/icon'
+import ElButton from '@element-plus/components/button'
 import { useLocale } from '@element-plus/hooks'
 import { DArrowLeft, DArrowRight } from '@element-plus/icons-vue'
 import {
@@ -110,6 +130,7 @@ import {
 } from '../props/panel-month-range'
 import { useMonthRangeHeader } from '../composables/use-month-range-header'
 import { useRangePicker } from '../composables/use-range-picker'
+import { isValidRange } from '../utils'
 import MonthTable from './basic-month-table.vue'
 
 import type { Dayjs } from 'dayjs'
@@ -122,7 +143,7 @@ const props = defineProps(panelMonthRangeProps)
 const emit = defineEmits(panelMonthRangeEmits)
 const unit = 'year'
 
-const { lang } = useLocale()
+const { t, lang } = useLocale()
 const pickerBase = inject('EP_PICKER_BASE') as any
 const { shortcuts, disabledDate, format } = pickerBase.props
 const defaultValue = toRef(pickerBase.props, 'defaultValue')
@@ -188,7 +209,20 @@ const handleRangePick = (val: RangePickValue, close = true) => {
   minDate.value = minDate_
 
   if (!close) return
-  handleRangeConfirm()
+  // handleRangeConfirm()
+}
+
+const btnDisabled = computed(() => {
+  return !(
+    minDate.value &&
+    maxDate.value &&
+    !rangeState.value.selecting &&
+    isValidRange([minDate.value, maxDate.value])
+  )
+})
+
+const handleClear = () => {
+  emit('pick', null)
 }
 
 const formatToString = (days: Dayjs[]) => {
@@ -209,5 +243,6 @@ function onParsedValueChanged(
   }
 }
 
+emit('set-picker-option', ['isValidValue', isValidRange])
 emit('set-picker-option', ['formatToString', formatToString])
 </script>
